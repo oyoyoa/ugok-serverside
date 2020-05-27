@@ -6,14 +6,17 @@ const dynClient = new AWS.DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
   service: dynamodb,
 });
-const client = new twitter(JSON.parse(fs.readFileSync("secret.json", "utf-8")));
+const twiClient = new twitter(
+  JSON.parse(fs.readFileSync("secret.json", "utf-8"))
+);
 
-client.get("lists/list", (error, lists) => {
+twiClient.get("lists/list", (error, lists) => {
   if (!error) {
     const params = {
       TableName: "List",
       Item: {
-        id: lists[0].id_str,
+        listId: 1,
+        twitterId: lists[0].id_str,
         name: lists[0].name,
       },
     };

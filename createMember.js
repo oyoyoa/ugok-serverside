@@ -10,30 +10,51 @@ const twiClient = new twitter(
   JSON.parse(fs.readFileSync("secret.json", "utf-8"))
 );
 
-function createAllMember() {
-  const list_obj = JSON.parse(fs.readFileSync("json/lists.json", "utf-8"));
-  const list_id = list_obj[0].id_str;
+function getListItem() {
   const params = {
-    list_id: list_id,
-    count: 50,
-    cursor: -1,
+    TableName: "List",
+    KeyConditionExpression: "#key1 = :key1_name",
+    ExpressionAttributeNames: {
+      "#key1": "listId",
+    },
+    ExpressionAttributeValues: {
+      ":key1_name": 1,
+    },
   };
+  return new Promise((resolve) => {
+    dynClient.query(params, (error, data) => {
+      if (error) {
+        console.log(error);
+      } else {
+        resolve(data.Items[0].twitterId);
+      }
+    });
+  });
+}
 
-  twiClient.get("lists/members", params, (error, members) => {
-    if (!error) {
-      members.users.forEach((member, index) => {
-        if (member != undefined) {
-          let item = {
-            id: member.id_str,
-            name: member.name,
-            icon: member.profile_image_url,
-          };
-          createMember(item, index);
-        }
-      });
-    } else {
-      console.error(error);
-    }
+function createMemberAll() {
+  getListItem().then((id_str) => {
+    const params = {
+      list_id: id_str,
+      count: 50,
+      cursor: -1,
+    };
+    twiClient.get("lists/members", params, (error, members) => {
+      if (error) {
+        console.error(error);
+      } else {
+        members.users.forEach((member, index) => {
+          if (member != undefined) {
+            let item = {
+              id: member.id_str,
+              name: member.name,
+              icon: member.profile_image_url,
+            };
+            createMember(item, index);
+          }
+        });
+      }
+    });
   });
 }
 
@@ -41,15 +62,15 @@ function createMember(item, index) {
   const params = {
     TableName: "Member",
     Item: {
-      userId: index,
+      userId: index + 1,
       twitter: item,
     },
   };
   try {
     dynClient.put(params).promise();
-  } catch (err) {
-    return err;
+  } catch (error) {
+    return error;
   }
 }
 
-createAllMember();
+createMemberAll();
