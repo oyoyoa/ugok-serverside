@@ -12,21 +12,18 @@ const twiClient = new twitter(
 
 function getListItem() {
   const params = {
-    TableName: "List",
-    KeyConditionExpression: "#key1 = :key1_name",
-    ExpressionAttributeNames: {
-      "#key1": "listId",
-    },
-    ExpressionAttributeValues: {
-      ":key1_name": 1,
+    TableName: "UGOKList",
+    Key: {
+      id: 1,
+      name: "UGOK",
     },
   };
   return new Promise((resolve) => {
-    dynClient.query(params, (error, data) => {
+    dynClient.get(params, (error, data) => {
       if (error) {
         console.log(error);
       } else {
-        resolve(data.Items[0].twitterId);
+        resolve(data.Item.twitterId);
       }
     });
   });
@@ -47,10 +44,10 @@ function createMemberAll() {
           if (member != undefined) {
             let item = {
               id: member.id_str,
-              name: member.name,
+              screenName: member.screen_name,
               icon: member.profile_image_url,
             };
-            createMember(item, index);
+            createMember(item, member.name, index);
           }
         });
       }
@@ -58,12 +55,16 @@ function createMemberAll() {
   });
 }
 
-function createMember(item, index) {
+function createMember(item, name, index) {
   const params = {
     TableName: "Member",
     Item: {
       userId: index + 1,
+      name: name,
       twitter: item,
+      alis: {
+        id: item.screenName,
+      },
     },
   };
   try {
