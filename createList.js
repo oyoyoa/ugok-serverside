@@ -11,17 +11,19 @@ const twiClient = new twitter(
 );
 
 twiClient.get("lists/list", (error, lists) => {
-  if (!error) {
+  if (error) {
+    console.log(error);
+  } else {
     const params = {
-      TableName: "List",
+      TableName: "UGOKList",
       Item: {
-        listId: 1,
-        twitterId: lists[0].id_str,
+        id: 1,
         name: lists[0].name,
+        twitterId: lists[0].id_str,
       },
     };
-    dynClient.put(params).promise();
-  } else {
-    console.log(error);
+    dynClient.put(params, (error) => {
+      if (error) console.log(error);
+    });
   }
 });
