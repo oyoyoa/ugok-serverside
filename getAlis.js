@@ -1,31 +1,64 @@
-const twitter = require("twitter");
 const fs = require("fs");
 const request = require("request");
-
-// const params = {
-//   list_id: list_id,
-// };
-const id = "ugok";
-const options = {
-  url: `https://alis.to/api/search/users?query=${id}`,
-  method: "GET",
-  json: true,
-};
-request(options, (error, responce, body) => {
-  if (!error && body.length > 0) {
-    console.log(body);
-  } else if (body.length === 0) {
-    console.log("データがありません");
-  } else {
-    console.log(error);
-  }
+const AWS = require("aws-sdk");
+const dynamodb = new AWS.DynamoDB({ region: "ap-northeast-1" });
+const dynClient = new AWS.DynamoDB.DocumentClient({
+  endpoint: "http://localhost:8000",
+  service: dynamodb,
 });
 
+function getAlisUser() {
+  getUserName().then((userName) => {
+    userName.forEach((user) => {
+      const options = {
+        url: encodeURI(`https://alis.to/api/search/users?query=${user.name}`),
+        method: "GET",
+        json: true,
+      };
+      request(options, (error, responce, body) => {
+        if (!error && body.length > 0) {
+          const params = {
+            TableName: "Member",
+            Item: {
+              userId: user.id,
+              alis: {
+                id: user.id,
+              },
+            },
+          };
+          try {
+            dynClient.put(params);
+          } catch (error) {
+            console.log(error);
+          }
+        } else if (body.length === 0) {
+          console.log(user.name);
+          console.log("データがありません");
+        } else {
+          console.log(error);
+        }
+      });
+    });
+  });
+}
+
 function addAlisItem() {}
-// client.get("lists/statuses", params, (error, tl) => {
-//   if (!error) {
-//     fs.appendFileSync("json/timeline.json", JSON.stringify(tl), "utf-8");
-//   } else {
-//     console.error(error);
-//   }
-// });
+function getUserName() {
+  let userName = [];
+  const params = {
+    TableName: "Member",
+  };
+  return new Promise((resolve) => {
+    dynClient.scan(params, (error, data) => {
+      if (error) {
+        console.log(error);
+      } else {
+        data.Items.forEach((user) => {
+          userName.push({ id: user.userId, name: user.name });
+        });
+        resolve(userName);
+      }
+    });
+  });
+}
+getAlisUser();
