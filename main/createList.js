@@ -7,7 +7,7 @@ const dynClient = new AWS.DynamoDB.DocumentClient({
   service: dynamodb,
 });
 const twiClient = new twitter(
-  JSON.parse(fs.readFileSync("secret.json", "utf-8"))
+  JSON.parse(fs.readFileSync("config/secret.json", "utf-8"))
 );
 
 twiClient.get("lists/list", (error, lists) => {

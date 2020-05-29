@@ -1,4 +1,3 @@
-const fs = require("fs");
 const request = require("request");
 const AWS = require("aws-sdk");
 const dynamodb = new AWS.DynamoDB({ region: "ap-northeast-1" });
