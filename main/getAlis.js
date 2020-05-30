@@ -7,43 +7,47 @@ const dynClient = new AWS.DynamoDB.DocumentClient({
 });
 
 function getAlisUser() {
-  getUserName().then((userName) => {
-    userName.forEach((user) => {
+  getUserName().then((users) => {
+    users.forEach((user) => {
       const options = {
         url: encodeURI(`https://alis.to/api/search/users?query=${user.name}`),
         method: "GET",
         json: true,
       };
       request(options, (error, responce, body) => {
-        if (!error && body.length > 0) {
+        if (error) {
+          console.log(error);
+        } else if (body.length === 0) {
+          console.log(`${user.name}のデータがありません`);
+        } else {
           const params = {
             TableName: "Member",
-            Item: {
+            Key: {
               userId: user.id,
-              alis: {
-                id: user.id,
-              },
+            },
+            UpdateExpression: "SET #a.#i = :newId",
+            ExpressionAttributeNames: {
+              "#a": "alis",
+              "#i": "id",
+            },
+            ExpressionAttributeValues: {
+              ":newId": body[0].user_id,
             },
           };
           try {
-            dynClient.put(params);
+            dynClient.update(params).promise();
+            console.log(`success!${user.id},${user.name}`);
           } catch (error) {
             console.log(error);
           }
-        } else if (body.length === 0) {
-          console.log(user.name);
-          console.log("データがありません");
-        } else {
-          console.log(error);
         }
       });
     });
   });
 }
 
-function addAlisItem() {}
 function getUserName() {
-  let userName = [];
+  let users = [];
   const params = {
     TableName: "Member",
   };
@@ -53,9 +57,9 @@ function getUserName() {
         console.log(error);
       } else {
         data.Items.forEach((user) => {
-          userName.push({ id: user.userId, name: user.name });
+          users.push({ id: user.userId, name: user.name });
         });
-        resolve(userName);
+        resolve(users);
       }
     });
   });
