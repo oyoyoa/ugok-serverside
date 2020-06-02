@@ -1,51 +1,39 @@
 const fetch = require("node-fetch");
 
-const AWS = require("aws-sdk");
-const dynamodb = new AWS.DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new AWS.DynamoDB.DocumentClient({
-  endpoint: "http://localhost:8000",
-  service: dynamodb,
-});
-
-async function getUserId() {
-  let users = [];
-  const params = {
-    TableName: "Member",
-  };
-  await dynClient
-    .scan(params, (error, data) => {
-      if (error) console.error(error);
-      else {
-        data.Items.forEach((user) => {
-          users.push({ user_id: user.userId, alis_id: user.alis.id });
-        });
-      }
-    })
-    .promise();
-  return users;
-}
-
+const users = [
+  "ugok841",
+  "chiroru",
+  "yoch",
+  "4ro",
+  "Onasu",
+  "tsumri",
+  "hi-ko",
+  "nnin",
+  "0721",
+  "kero-ugok",
+  "ringo",
+  "77ugok",
+];
 async function getArticlesId(user) {
+  const url = `https://alis.to/api/users/${user}/articles/public`;
   const response = await fetch(
-    `https://alis.to/api/users/${user.alis_id}/articles/public`
+    `https://alis.to/api/users/${user}/articles/public`
   );
   const body = await response.json();
   let alis = {
-    id: user.user_id,
+    id: user,
     articles: [],
   };
-  if ("Items" in body) {
-    body.Items.forEach((article) => {
-      alis.articles.push(article.article_id);
-    });
-  }
+  body.Items.forEach((article) => {
+    alis.articles.push(article.article_id);
+  });
   return alis;
 }
 
 async function getAlisLikes(alis) {
-  let likes = {
+  let articles = {
     id: alis.id,
-    count: 0,
+    likes: 0,
   };
   await Promise.all(
     alis.articles.map(async (article) => {
@@ -57,19 +45,18 @@ async function getAlisLikes(alis) {
   )
     .then((body) => {
       body.forEach((obj) => {
-        likes.count += obj.count;
+        articles.likes += obj.count;
       });
     })
     .catch((err) => {
       console.log("getAlisLikes");
       console.log(err);
     });
-  return likes;
+  return articles;
 }
 
 async function main() {
-  const users = await getUserId();
-  Promise.all(
+  await Promise.all(
     users.map(async (user) => {
       const alis = await getArticlesId(user);
       return await getAlisLikes(alis);
@@ -84,4 +71,5 @@ async function main() {
       console.log(err);
     });
 }
+
 main();

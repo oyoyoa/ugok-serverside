@@ -17,6 +17,7 @@
     "axios": "^0.19.2",
     "dynamodb-admin": "^4.0.0",
     "mysql": "^2.18.1",
+    "node-fetch": "^2.6.0",
     "twitter": "^1.7.1"
   }
 }
