@@ -1,8 +1,7 @@
-const fetch = require("node-fetch");
-
-const AWS = require("aws-sdk");
-const dynamodb = new AWS.DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new AWS.DynamoDB.DocumentClient({
+import fetch from "node-fetch";
+import { DynamoDB } from "aws-sdk";
+const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
+const dynClient = new DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
   service: dynamodb,
 });
@@ -42,13 +41,14 @@ async function getArticlesId(user) {
   return alis;
 }
 
-async function getAlisLikes(alis) {
-  let likes = {
-    id: alis.id,
-    count: 0,
+async function getAlisLikes(alis_data) {
+  let alis = {
+    id: alis_data.id,
+    likes: 0,
+    posts: alis_data.articles.length,
   };
   await Promise.all(
-    alis.articles.map(async (article) => {
+    alis_data.articles.map(async (article) => {
       const response = await fetch(
         `https://alis.to/api/articles/${article}/likes`
       );
@@ -57,14 +57,41 @@ async function getAlisLikes(alis) {
   )
     .then((body) => {
       body.forEach((obj) => {
-        likes.count += obj.count;
+        alis.likes += obj.count;
       });
     })
     .catch((err) => {
       console.log("getAlisLikes");
       console.log(err);
     });
-  return likes;
+  return alis;
+}
+
+function updateAlisData(users) {
+  users.forEach((user) => {
+    const params = {
+      TableName: "Member",
+      Key: {
+        userId: user.id,
+      },
+      UpdateExpression: "SET #a.#l = :likesCount, #a.#p = :postsCount",
+      ExpressionAttributeNames: {
+        "#a": "alis",
+        "#l": "likes_all",
+        "#p": "posts_all",
+      },
+      ExpressionAttributeValues: {
+        ":likesCount": user.likes,
+        ":postsCount": user.posts,
+      },
+    };
+    try {
+      dynClient.update(params).promise();
+    } catch (error) {
+      console.log("updateAlisData");
+      console.log(error);
+    }
+  });
 }
 
 async function main() {
@@ -76,8 +103,8 @@ async function main() {
     })
   )
     .then((data) => {
+      updateAlisData(data);
       console.log("success");
-      console.log(data);
     })
     .catch((err) => {
       console.log("main");

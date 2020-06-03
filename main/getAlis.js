@@ -1,7 +1,7 @@
-const fetch = require("node-fetch");
-const AWS = require("aws-sdk");
-const dynamodb = new AWS.DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new AWS.DynamoDB.DocumentClient({
+import fetch from "node-fetch";
+import { DynamoDB } from "aws-sdk";
+const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
+const dynClient = new DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
   service: dynamodb,
 });
