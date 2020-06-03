@@ -1,5 +1,5 @@
-import fetch from "node-fetch";
-import { DynamoDB } from "aws-sdk";
+const fetch = require("node-fetch");
+const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
 const dynClient = new DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
@@ -69,6 +69,7 @@ async function getAlisLikes(alis_data) {
 
 function updateAlisData(users) {
   users.forEach((user) => {
+    console.log(user.likes, user.posts);
     const params = {
       TableName: "Member",
       Key: {

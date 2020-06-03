@@ -1,6 +1,6 @@
-import twitter from "twitter";
-import { readFileSync } from "fs";
-import { DynamoDB } from "aws-sdk";
+const twitter = require("twitter");
+const { readFileSync } = require("fs");
+const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
 const dynClient = new DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
@@ -10,7 +10,7 @@ const twiClient = new twitter(
   JSON.parse(readFileSync("config/secret.json", "utf-8"))
 );
 
-function getListItem() {
+async function getListItem() {
   const params = {
     TableName: "UGOKList",
     Key: {
@@ -29,29 +29,27 @@ function getListItem() {
   });
 }
 
-function createMemberAll() {
-  getListItem().then((id_str) => {
-    const params = {
-      list_id: id_str,
-      count: 50,
-      cursor: -1,
-    };
-    twiClient.get("lists/members", params, (error, members) => {
-      if (error) {
-        console.error(error);
-      } else {
-        members.users.forEach((member, index) => {
-          if (member != undefined) {
-            let item = {
-              id: member.id_str,
-              screenName: member.screen_name,
-              icon: member.profile_image_url,
-            };
-            createMember(item, member.name, index);
-          }
-        });
-      }
-    });
+async function createMemberAll() {
+  const id_str = await getListItem();
+  const params = {
+    list_id: id_str,
+    count: 50,
+  };
+  twiClient.get("lists/members", params, (error, members) => {
+    if (error) {
+      console.error(error);
+    } else {
+      members.users.forEach((member, index) => {
+        if (member != undefined) {
+          let item = {
+            id: member.id_str,
+            screenName: member.screen_name,
+            icon: member.profile_image_url,
+          };
+          createMember(item, member.name, index);
+        }
+      });
+    }
   });
 }
 
