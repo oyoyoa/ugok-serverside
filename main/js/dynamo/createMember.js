@@ -1,3 +1,5 @@
+// todo main func の 作成
+"use strict";
 const twitter = require("twitter");
 const { readFileSync } = require("fs");
 const { DynamoDB } = require("aws-sdk");

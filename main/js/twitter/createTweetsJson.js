@@ -1,12 +1,6 @@
 "use strict";
 const twitter = require("twitter");
 const fs = require("fs");
-const { DynamoDB } = require("aws-sdk");
-const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new DynamoDB.DocumentClient({
-  endpoint: "http://localhost:8000",
-  service: dynamodb,
-});
 const twiClient = new twitter(
   JSON.parse(fs.readFileSync("config/secret.json", "utf-8"))
 );
@@ -23,6 +17,7 @@ function getUsers() {
 
   return users;
 }
+
 async function getTweets(user) {
   let params = {
     id: user.twitter_id,
@@ -50,7 +45,7 @@ async function getTweets(user) {
 }
 
 async function main() {
-  const users = await getUsers();
+  const users = getUsers();
   Promise.all(
     users.map(async (user) => {
       getTweets(user);
