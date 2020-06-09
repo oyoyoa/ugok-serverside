@@ -31,28 +31,41 @@ async function getUsers() {
   return users;
 }
 
-async function getTweets(users) {
-  await Promise.all(
-    users.map(async (user) => {
-      const params = {
-        id: user.twitter_id,
-        count: 200,
-        include_rts: false,
-      };
-      console.log("次");
-      const tweets = await twiClient.get("statuses/user_timeline", params);
-      fs.writeFileSync(
-        `json/tweets/${user.twitter_id}.json`,
-        JSON.stringify(tweets),
-        "utf-8"
-      );
-    })
+async function getTweets(user) {
+  let params = {
+    id: user.twitter_id,
+    count: 200,
+    include_rts: false,
+  };
+  let tweets = await twiClient.get("statuses/user_timeline", params);
+  let all_tweets = tweets;
+  let oldest = all_tweets.slice(-1)[0].id;
+  while (tweets.length > 0) {
+    params.maxid = oldest;
+    tweets = await twiClient.get("statuses/user_timeline", params);
+    all_tweets = all_tweets.concat(tweets);
+    oldest = all_tweets.slice(-1)[0].id - 1;
+  }
+  fs.writeFileSync(
+    `json/tweets/${user.twitter_id}.json`,
+    JSON.stringify(all_tweets),
+    "utf-8"
   );
 }
 
 async function main() {
   const users = await getUsers();
-  getTweets(users);
+  Promise.all(
+    users.map(async (user) => {
+      getTweets(user);
+    })
+  )
+    .then(() => {
+      console.log("success");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   //   console.log(users);
 }
 

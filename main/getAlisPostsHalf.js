@@ -62,39 +62,35 @@ async function getAlisLikes(alis_data) {
         alis.likes += obj.count;
       });
     })
-    .catch((err) => {
-      console.log("getAlisLikes");
-      console.log(err);
+    .catch((error) => {
+      console.error(error);
     });
   return alis;
 }
 
-function updateAlisData(users) {
-  users.forEach((user) => {
-    console.log(user.likes, user.posts);
-    const params = {
-      TableName: "Member",
-      Key: {
-        userId: user.id,
-      },
-      UpdateExpression: "SET #a.#l = :likesCount, #a.#p = :postsCount",
-      ExpressionAttributeNames: {
-        "#a": "alis",
-        "#l": "likes_half",
-        "#p": "posts_half",
-      },
-      ExpressionAttributeValues: {
-        ":likesCount": user.likes,
-        ":postsCount": user.posts,
-      },
-    };
-    try {
-      dynClient.update(params).promise();
-    } catch (error) {
-      console.log("updateAlisData");
-      console.log(error);
-    }
-  });
+function updateAlisData(user) {
+  console.log(user.likes, user.posts);
+  const params = {
+    TableName: "Member",
+    Key: {
+      userId: user.id,
+    },
+    UpdateExpression: "SET #a.#l = :likesCount, #a.#p = :postsCount",
+    ExpressionAttributeNames: {
+      "#a": "alis",
+      "#l": "likes_half",
+      "#p": "posts_half",
+    },
+    ExpressionAttributeValues: {
+      ":likesCount": user.likes,
+      ":postsCount": user.posts,
+    },
+  };
+  try {
+    dynClient.update(params).promise();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function main() {
@@ -118,13 +114,14 @@ async function main() {
       return await getAlisLikes(alis);
     })
   )
-    .then((data) => {
-      updateAlisData(data);
+    .then((users) => {
+      users.forEach((user) => {
+        updateAlisData(user);
+      });
       console.log("success");
     })
-    .catch((err) => {
-      console.log("main");
-      console.log(err);
+    .catch((error) => {
+      console.error(error);
     });
 }
 

@@ -67,32 +67,30 @@ async function getAlisLikes(alis_data) {
   return alis;
 }
 
-function updateAlisData(users) {
-  users.forEach((user) => {
-    console.log(user.likes, user.posts);
-    const params = {
-      TableName: "Member",
-      Key: {
-        userId: user.id,
-      },
-      UpdateExpression: "SET #a.#l = :likesCount, #a.#p = :postsCount",
-      ExpressionAttributeNames: {
-        "#a": "alis",
-        "#l": "likes_all",
-        "#p": "posts_all",
-      },
-      ExpressionAttributeValues: {
-        ":likesCount": user.likes,
-        ":postsCount": user.posts,
-      },
-    };
-    try {
-      dynClient.update(params).promise();
-    } catch (error) {
-      console.log("updateAlisData");
-      console.log(error);
-    }
-  });
+function updateAlisData(user) {
+  console.log(user.likes, user.posts);
+  const params = {
+    TableName: "Member",
+    Key: {
+      userId: user.id,
+    },
+    UpdateExpression: "SET #a.#l = :likesCount, #a.#p = :postsCount",
+    ExpressionAttributeNames: {
+      "#a": "alis",
+      "#l": "likes_all",
+      "#p": "posts_all",
+    },
+    ExpressionAttributeValues: {
+      ":likesCount": user.likes,
+      ":postsCount": user.posts,
+    },
+  };
+  try {
+    dynClient.update(params).promise();
+  } catch (error) {
+    console.log("updateAlisData");
+    console.log(error);
+  }
 }
 
 async function main() {
@@ -103,13 +101,15 @@ async function main() {
       return await getAlisLikes(alis);
     })
   )
-    .then((data) => {
-      updateAlisData(data);
+    .then((users) => {
+      users.forEach((user) => {
+        updateAlisData(user);
+      });
       console.log("success");
     })
-    .catch((err) => {
+    .catch((error) => {
       console.log("main");
-      console.log(err);
+      console.log(error);
     });
 }
 main();
