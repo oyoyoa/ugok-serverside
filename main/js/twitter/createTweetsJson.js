@@ -6,7 +6,9 @@ const twiClient = new twitter(
 );
 
 function getUsers() {
-  const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
+  const users_obj = JSON.parse(
+    fs.readFileSync("json/ugokMembers.json", "utf-8")
+  );
   let users = [];
   users_obj.forEach((user) => {
     users.push({
@@ -19,6 +21,7 @@ function getUsers() {
 }
 
 async function getTweets(user) {
+  console.log(user);
   let params = {
     id: user.twitter_id,
     count: 200,
@@ -30,12 +33,13 @@ async function getTweets(user) {
   let all_tweets = tweets;
   let oldest = all_tweets.slice(-1)[0].id;
   while (tweets.length > 0) {
-    params.maxid = oldest;
+    console.log(`${oldest}より古いツイートです`);
+    params.max_id = oldest;
     tweets = await twiClient
       .get("statuses/user_timeline", params)
       .catch((error) => console.error(error));
     all_tweets = all_tweets.concat(tweets);
-    oldest = all_tweets.slice(-1)[0].id - 1;
+    oldest = all_tweets.slice(-1)[0].id - 300;
   }
   fs.writeFileSync(
     `json/tweets/${user.twitter_id}.json`,
@@ -57,7 +61,7 @@ async function main() {
     .catch((error) => {
       console.error(error);
     });
-  //   console.log(users);
+  console.log(users);
 }
 
 main();
