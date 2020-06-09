@@ -26,7 +26,6 @@ function getLikeAndRT(user, date) {
   const tweets = JSON.parse(
     readFileSync(`json/tweets/${user.twitter_id}.json`, "utf-8")
   );
-  if (user.twitter_id === "kero_ugok") console.log(tweets.slice(-1)[0]);
   tweets.forEach((tweet) => {
     if (Date.parse(tweet.created_at) > date.getTime()) {
       likes += tweet.favorite_count;
@@ -78,12 +77,10 @@ async function main() {
     period = 15778800000;
   }
   date.setTime(date.getTime() - period);
-  console.log(date);
   let users = getUsers();
-  console.log(users);
   users.forEach((user) => {
     user.twitter = getLikeAndRT(user, date);
-    // updateTwitterData(user);
+    updateTwitterData(user);
   });
 }
 
