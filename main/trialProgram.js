@@ -1,3 +1,4 @@
+"use strict";
 import fetch from "node-fetch";
 
 const users = [

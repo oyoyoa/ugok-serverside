@@ -1,3 +1,5 @@
+"use strict";
+const { readFileSync } = require("fs");
 const fetch = require("node-fetch");
 const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
@@ -6,26 +8,20 @@ const dynClient = new DynamoDB.DocumentClient({
   service: dynamodb,
 });
 
-function getUserName() {
+function getUsers() {
+  const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
   let users = [];
-  const params = {
-    TableName: "Member",
-  };
-  return new Promise((resolve) => {
-    dynClient.scan(params, (error, data) => {
-      if (error) {
-        console.log(error);
-      } else {
-        data.Items.forEach((user) => {
-          users.push({ id: user.userId, name: user.name });
-        });
-        resolve(users);
-      }
+  users_obj.forEach((user) => {
+    users.push({
+      id: user.user_id,
+      name: user.name,
     });
   });
+
+  return users;
 }
 
-function getAlisUser(user) {
+async function getAlisUser(user) {
   const request = await fetch(
     encodeURI(`https://alis.to/api/search/users?query=${user.name}`)
   );
@@ -57,12 +53,14 @@ function getAlisUser(user) {
 }
 
 async function main() {
-  const users = await getUserName();
+  const users = getUsers();
   Promise.all(
     users.map(async (user) => {
       getAlisUser(user);
     })
-  );
+  ).catch((error) => {
+    console.error(error);
+  });
 }
 
 main();

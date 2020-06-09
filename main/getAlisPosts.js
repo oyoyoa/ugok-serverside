@@ -1,3 +1,4 @@
+"use strict";
 const fetch = require("node-fetch");
 const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
@@ -6,21 +7,16 @@ const dynClient = new DynamoDB.DocumentClient({
   service: dynamodb,
 });
 
-async function getUserId() {
+function getUsers() {
+  const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
   let users = [];
-  const params = {
-    TableName: "Member",
-  };
-  await dynClient
-    .scan(params, (error, data) => {
-      if (error) console.error(error);
-      else {
-        data.Items.forEach((user) => {
-          users.push({ user_id: user.userId, alis_id: user.alis.id });
-        });
-      }
-    })
-    .promise();
+  users_obj.forEach((user) => {
+    users.push({
+      id: user.user_id,
+      twitter_id: user.twitter_id,
+    });
+  });
+
   return users;
 }
 
@@ -94,7 +90,7 @@ function updateAlisData(user) {
 }
 
 async function main() {
-  const users = await getUserId();
+  const users = getUsers();
   Promise.all(
     users.map(async (user) => {
       const alis = await getArticlesId(user);

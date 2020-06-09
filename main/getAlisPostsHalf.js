@@ -6,21 +6,16 @@ const dynClient = new DynamoDB.DocumentClient({
   service: dynamodb,
 });
 
-async function getUserId() {
+function getUsers() {
+  const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
   let users = [];
-  const params = {
-    TableName: "Member",
-  };
-  await dynClient
-    .scan(params, (error, data) => {
-      if (error) console.error(error);
-      else {
-        data.Items.forEach((user) => {
-          users.push({ user_id: user.userId, alis_id: user.alis.id });
-        });
-      }
-    })
-    .promise();
+  users_obj.forEach((user) => {
+    users.push({
+      id: user.user_id,
+      alis_id: user.alis_id,
+    });
+  });
+
   return users;
 }
 
@@ -30,7 +25,7 @@ async function getArticlesId(user, date) {
   );
   const body = await response.json();
   let alis = {
-    id: user.user_id,
+    id: usid,
     articles: [],
   };
   if ("Items" in body) {
@@ -69,7 +64,6 @@ async function getAlisLikes(alis_data) {
 }
 
 function updateAlisData(user) {
-  console.log(user.likes, user.posts);
   const params = {
     TableName: "Member",
     Key: {
@@ -107,7 +101,7 @@ async function main() {
     period = 15778800000;
   }
   date.setTime(date.getTime() - period);
-  const users = await getUserId();
+  const users = getUsers();
   Promise.all(
     users.map(async (user) => {
       const alis = await getArticlesId(user, date);
