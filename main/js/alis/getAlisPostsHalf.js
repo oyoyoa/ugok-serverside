@@ -1,3 +1,4 @@
+"use strict";
 const fetch = require("node-fetch");
 const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });

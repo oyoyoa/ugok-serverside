@@ -67,13 +67,13 @@ async function main() {
   const date = new Date();
   const month = date.getMonth() + 1;
   let period;
-  if (month !== 4 && month !== 6) {
+  if (month !== 4 && month !== 9) {
     console.log("学期始めではありません");
     return;
   }
   if (month === 4) {
     period = 18408600000;
-  } else if (month === 6) {
+  } else if (month === 9) {
     period = 15778800000;
   }
   date.setTime(date.getTime() - period);

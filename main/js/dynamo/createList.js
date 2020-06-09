@@ -1,6 +1,7 @@
-import twitter from "twitter";
-import { readFileSync } from "fs";
-import { DynamoDB } from "aws-sdk";
+"use strict";
+const twitter = require("twitter");
+const { readFileSync } = require("fs");
+const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
 const dynClient = new DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
