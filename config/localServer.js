@@ -1,9 +1,6 @@
 const { DynamoDB } = require("aws-sdk");
-
 const { createServer } = require("dynamodb-admin");
-
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
-
 const dynClient = new DynamoDB.DocumentClient({
   endpoint: "http://localhost:8000",
   service: dynamodb,

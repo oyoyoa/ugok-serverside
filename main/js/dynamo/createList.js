@@ -12,9 +12,8 @@ const twiClient = new twitter(
 );
 
 twiClient.get("lists/list", (error, lists) => {
-  if (error) {
-    console.log(error);
-  } else {
+  if (error) console.error(error);
+  else {
     const params = {
       TableName: "UGOKList",
       Item: {
