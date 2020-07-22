@@ -20,14 +20,15 @@ function getUsers() {
   return users;
 }
 
-function getLikeAndRT(user, date) {
+function getLikesAndRT(user, date) {
   let rt = 0;
   let likes = 0;
   const tweets = JSON.parse(
     readFileSync(`json/tweets/${user.twitter_id}.json`, "utf-8")
   );
   tweets.forEach((tweet) => {
-    if (Date.parse(tweet.created_at) > date.getTime()) {
+    const created_at = new Date(tweets[0].created_at);
+    if (created_at.getTime() > date.getTime()) {
       likes += tweet.favorite_count;
       rt += tweet.retweet_count;
     }
@@ -79,7 +80,7 @@ async function main() {
   date.setTime(date.getTime() - period);
   let users = getUsers();
   users.forEach((user) => {
-    user.twitter = getLikeAndRT(user, date);
+    user.twitter = getLikesAndRT(user, date);
     updateTwitterData(user);
   });
 }
