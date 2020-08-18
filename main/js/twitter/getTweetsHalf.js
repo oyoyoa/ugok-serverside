@@ -69,8 +69,10 @@ function updateTwitterData(user) {
 }
 
 async function main() {
-  const date = new Date(2020, 5);
-  const month = date.getMonth() - 1;
+  const date = new Date();
+  console.log(date);
+  const month = date.getMonth() + 1;
+  console.log(month);
   let period;
   if (month !== 4 && month !== 9) {
     console.log("学期始めではありません");
