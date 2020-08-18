@@ -20,7 +20,7 @@ function getUsers() {
   return users;
 }
 
-async function getArticlesId(user, date) {
+async function getArticlesId(user, start, end) {
   const response = await fetch(
     `https://alis.to/api/users/${user.alis_id}/articles/public`
   );
@@ -31,7 +31,10 @@ async function getArticlesId(user, date) {
   };
   if ("Items" in body) {
     body.Items.forEach((article) => {
-      if (article.created_at * 1000 > date.getTime()) {
+      if (
+        start.getTime() < created_at * 1000 &&
+        created_at * 1000 < end.getTime()
+      ) {
         alis.articles.push(article.article_id);
       }
     });
@@ -97,15 +100,23 @@ async function main() {
     return;
   }
   if (month === 4) {
-    period = 18408600000;
+    period = 7;
   } else if (month === 9) {
-    period = 15778800000;
+    period = 5;
   }
-  date.setTime(date.getTime() - period);
+  const year_e = date.getFullYear();
+  const month_e = date.getMonth() - 2;
+  date.setMonth(date.getMonth() - period);
+  const year_s = date.getFullYear();
+  const month_s = date.getMonth() - 2;
+  const start = new Date(year_s, month_s);
+  const end = new Date(year_e, month_e);
+  start.setDate(2);
+  end.setDate(2);
   const users = getUsers();
   Promise.all(
     users.map(async (user) => {
-      const alis = await getArticlesId(user, date);
+      const alis = await getArticlesId(user, start, end);
       return await getAlisLikes(alis);
     })
   )

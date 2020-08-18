@@ -92,7 +92,6 @@ async function main() {
   const end = new Date(year_e, month_e);
   start.setDate(2);
   end.setDate(2);
-  console.log(start, end);
   let users = getUsers();
   users.forEach((user) => {
     user.twitter = getLikesAndRT(user, start, end);
