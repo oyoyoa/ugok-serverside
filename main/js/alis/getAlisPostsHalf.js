@@ -1,4 +1,5 @@
 "use strict";
+const { readFileSync } = require("fs");
 const fetch = require("node-fetch");
 const { DynamoDB } = require("aws-sdk");
 const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
@@ -26,13 +27,13 @@ async function getArticlesId(user, start, end) {
   );
   const body = await response.json();
   let alis = {
-    id: usid,
+    id: user.id,
     articles: [],
   };
   if ("Items" in body) {
     body.Items.forEach((article) => {
       if (
-        start.getTime() < created_at * 1000 &&
+        start.getTime() < article.created_at * 1000 &&
         created_at * 1000 < end.getTime()
       ) {
         alis.articles.push(article.article_id);
