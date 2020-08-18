@@ -33,7 +33,7 @@ async function getTweets(user) {
   let all_tweets = tweets;
   let oldest = all_tweets.slice(-1)[0].id;
   while (tweets.length > 0) {
-    console.log(`${oldest}より古いツイートです`);
+    // console.log(`${oldest}より古いツイートです`);
     params.max_id = oldest;
     tweets = await twiClient
       .get("statuses/user_timeline", params)
