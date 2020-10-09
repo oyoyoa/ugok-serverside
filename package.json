@@ -17,9 +17,12 @@
     "axios": "^0.19.2",
     "dynamodb-admin": "^4.0.0",
     "express": "^4.17.1",
+    "mongoose": "^5.10.8",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.0",
-    "nodemon": "^2.0.4",
     "twitter": "^1.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
