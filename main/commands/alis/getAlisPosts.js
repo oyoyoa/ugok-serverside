@@ -63,6 +63,7 @@ async function getAlisLikes(alis_data) {
   return alis;
 }
 
+// DB操作
 function updateAlisData(user) {
   console.log(user.likes, user.posts);
   const params = {

@@ -1,21 +1,12 @@
-// const express = require("express"),
-//   app = express(),
-//   port = process.env.PORT || 3000,
-//   mongoose = require("mongoose"),
-//   User = require("./api/models/userkModel"), // 作成したModelの読み込み
-//   bodyParser = require("body-parser");
+require("dotenv").config();
+const express = require("express");
+const app = express();
 
-// mongoose.Promise = global.Promise;
-// mongoose.connect("mongodb://localhost/Ugokdb");
+// const port = 4000;
 
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
+// app.listen(port, () => {
+//   console.log("Server is running on Port: " + port);
+// });
 
-// const routes = require("./api/routes/userkRoutes"); // Routeのインポート
-// routes(app); //appにRouteを設定する。
-
-// app.listen(port); // appを特定のportでlistenさせる。
-
-// console.log("ugok list RESTful API server started on: " + port);
 const connectDB = require("./db");
 connectDB();

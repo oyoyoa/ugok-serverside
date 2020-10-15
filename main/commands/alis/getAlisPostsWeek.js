@@ -64,7 +64,7 @@ async function getAlisLikes(alis_data) {
     });
   return alis;
 }
-
+// DB操作
 function updateAlisData(user) {
   const params = {
     TableName: "Member",

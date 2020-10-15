@@ -45,6 +45,7 @@ function getLikesAndRT(user, date) {
   return twitter_obj;
 }
 
+// DB操作
 function updateTwitterData(user) {
   const params = {
     TableName: "Member",

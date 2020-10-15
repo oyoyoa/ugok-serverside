@@ -21,6 +21,7 @@ function getUsers() {
   return users;
 }
 
+// DB操作
 async function getAlisUser(user) {
   const request = await fetch(
     encodeURI(`https://alis.to/api/search/users?query=${user.name}`)

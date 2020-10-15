@@ -2,8 +2,8 @@ const mongoose = require("mongoose"),
   Schema = mongoose.Schema;
 
 const TwitterSchema = new Schema({
-  twitterId: { type: String },
-  screenName: { type: String },
+  twitterId: { type: String, required: true },
+  screenName: { type: String, required: true },
   icon: { type: String },
   likes: {
     all: { type: Number },

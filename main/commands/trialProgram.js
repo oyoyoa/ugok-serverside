@@ -1,75 +1,48 @@
-"use strict";
-import fetch from "node-fetch";
+const mongoose = require("mongoose");
+// 一般的には, `mongodb://localhost/test` の指定になります
+mongoose.connect("mongodb://localhost/test", { useNewUrlParser: true });
+// mongoose.connect('mongodb://mongo/test', {useNewUrlParser: true});
+const db = mongoose.connection;
 
-const users = [
-  "ugok841",
-  "chiroru",
-  "yoch",
-  "4ro",
-  "Onasu",
-  "tsumri",
-  "hi-ko",
-  "nnin",
-  "0721",
-  "kero-ugok",
-  "ringo",
-  "77ugok",
-];
-async function getArticlesId(user) {
-  const url = `https://alis.to/api/users/${user}/articles/public`;
-  const response = await fetch(
-    `https://alis.to/api/users/${user}/articles/public`
-  );
-  const body = await response.json();
-  let alis = {
-    id: user,
-    articles: [],
-  };
-  body.Items.forEach((article) => {
-    alis.articles.push(article.article_id);
+db.on("error", console.error.bind(console, "mongo 接続エラー ctrl + c:"));
+db.once("open", () => {
+  console.log("DB接続中... You can cancel from ctrl + c");
+});
+const kittySchema = mongoose.Schema({
+  name: String,
+});
+
+// const Kitten = mongoose.model("Kitten", kittySchema);
+
+// const silence = new Kitten({
+//   name: "Silence",
+// });
+
+// console.log(silence.name);
+
+kittySchema.methods.speak = function () {
+  const noName = "名前はまだ無い";
+  const greeting = this.name ? "みゃ〜の名前は " + this.name : noName;
+  console.log(greeting);
+};
+
+// kittySchema.methods.speak();
+
+const Kitten = mongoose.model("Kitten", kittySchema);
+
+const tama = new Kitten({ name: "Tama" });
+// tama.speak();
+
+// 確実にsave してから　find したいので 関数にしている
+async function tamaFunc() {
+  await tama.save((err, kitten) => {
+    if (err) console.error(err);
+    console.log(kitten);
   });
-  return alis;
-}
 
-async function getAlisLikes(alis) {
-  let articles = {
-    id: alis.id,
-    likes: 0,
-  };
-  await Promise.all(
-    alis.articles.map(async (article) => {
-      const response = await fetch(
-        `https://alis.to/api/articles/${article}/likes`
-      );
-      return await response.json();
-    })
-  )
-    .then((body) => {
-      body.forEach((obj) => {
-        articles.likes += obj.count;
-      });
-    })
-    .catch((err) => {
-      console.log("getAlisLikes");
-      console.log(err);
-    });
-  return articles;
+  await Kitten.find((err, kittens) => {
+    if (err) console.error(err);
+    console.log(kittens);
+  });
 }
-
-async function main() {
-  await Promise.all(
-    users.map(async (user) => {
-      const alis = await getArticlesId(user);
-      return await getAlisLikes(alis);
-    })
-  )
-    .then((data) => {
-      console.log("success");
-      console.log(data);
-    })
-    .catch((err) => {
-      console.log("main");
-      console.log(err);
-    });
-}
-main();
+tamaFunc();

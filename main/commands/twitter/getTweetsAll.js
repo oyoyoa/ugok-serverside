@@ -7,6 +7,7 @@ const dynClient = new DynamoDB.DocumentClient({
   service: dynamodb,
 });
 
+// jsonfileから読み込む
 function getUsers() {
   const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
   let users = [];
@@ -37,6 +38,7 @@ function getLikeAndRT(user) {
   return twitter_obj;
 }
 
+// DB操作
 function updateTwitterData(user) {
   const params = {
     TableName: "Member",
