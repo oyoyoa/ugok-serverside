@@ -4,7 +4,6 @@ const db = require("../../config/db");
 
 const User = require("../api/models/userModel"),
   Twitter = require("../api/models/twitterModel");
-
 const twitterAPI = require("twitter"),
   consumer_key = process.env.CONSUMER_KEY,
   consumer_secret = process.env.CONSUMER_SECRET,
@@ -22,7 +21,7 @@ async function getUserByTwitter() {
     list_id: "1044751513468293126", // UGOKリストのID
     count: 50,
   };
-  // UGOKまとめリストから、メンバーを取得するTwitter APIを叩く
+  // Twitterのリスト（UGOKまとめ）から、メンバーを取得するTwitter APIを叩く
   twiClient.get("lists/members", params, async (error, members) => {
     // twitter APIを呼び出せたかチェック
     if (error) {
@@ -47,6 +46,7 @@ async function getUserByTwitter() {
   });
 }
 
+// メンバーを作成する
 async function createMember(name, id, screen_name, icon_url) {
   //   すでにユーザーがいるかどうかチェック
   const twi_user = await Twitter.findOne({ twitterId: id });
@@ -73,9 +73,12 @@ async function createMember(name, id, screen_name, icon_url) {
       console.error(err);
     }
   } else {
+    // すでに作成されているユーザーの場合、コンソールで表示する
     console.log(`${name} is already exists.`);
   }
 }
 
 db.connectDB();
 getUserByTwitter();
+// todo: 全てが終わったらdisconnectDBする
+// ugokまとめ、ugokらじおのデータはスキップする(できればugok*をスキップする)
