@@ -1,67 +1,58 @@
 "use strict";
-const { readFileSync } = require("fs");
 const fetch = require("node-fetch");
-const { DynamoDB } = require("aws-sdk");
-const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new DynamoDB.DocumentClient({
-  endpoint: "http://localhost:8000",
-  service: dynamodb,
-});
+const db = require("../../../config/db");
+const User = require("../../api/models/userModel"),
+  Alis = require("../../api/models/alisModel");
 
-function getUsers() {
-  const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
-  let users = [];
-  users_obj.forEach((user) => {
-    users.push({
-      id: user.user_id,
-      name: user.name,
+async function createAlis() {
+  const users_obj = await User.find(async (err, users) => {
+    if (err) console.error(err);
+    // ここにupdate処理が必要
+    await Promise.all(
+      users.map(async (user) => {
+        const body = await getAlisUser(user.name);
+        if (body.length === 0) {
+          console.log(`${user.name}のデータがありません`);
+        } else {
+          const alis = new Alis({ alisId: body[0].user_id });
+          user.alisId = alis._id;
+          await alis.save((err) => {
+            if (err) console.error(err);
+          });
+          await user.save((err, user) => {
+            if (err) console.error(err);
+            console.log(user);
+          });
+        }
+      })
+    ).catch((error) => {
+      console.error(error);
+      db.disconnectDB();
     });
   });
-
-  return users;
+  return users_obj;
 }
 
-// DB操作
-async function getAlisUser(user) {
+async function getAlisUser(name) {
   const request = await fetch(
-    encodeURI(`https://alis.to/api/search/users?query=${user.name}`)
+    encodeURI(`https://alis.to/api/search/users?query=${name}`)
   );
   const body = await request.json();
-  if (body.length === 0) {
-    console.log(`${user.name}のデータがありません`);
-  } else {
-    const params = {
-      TableName: "Member",
-      Key: {
-        userId: user.id,
-      },
-      UpdateExpression: "SET #a.#i = :newId",
-      ExpressionAttributeNames: {
-        "#a": "alis",
-        "#i": "id",
-      },
-      ExpressionAttributeValues: {
-        ":newId": body[0].user_id,
-      },
-    };
-    try {
-      dynClient.update(params).promise();
-      console.log(`success!${user.id},${user.name}`);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  return body;
 }
 
 async function main() {
-  const users = getUsers();
-  Promise.all(
-    users.map(async (user) => {
-      getAlisUser(user);
-    })
-  ).catch((error) => {
-    console.error(error);
-  });
+  db.connectDB();
+  await createAlis();
+  // Promise.all(
+  //   users.map(async (user) => {
+  //     getAlisUser(user);
+  //   })
+  // ).catch((error) => {
+  //   console.error(error);
+  // });
 }
 
 main();
+// todo: モジュール化する
+// disconnectDB

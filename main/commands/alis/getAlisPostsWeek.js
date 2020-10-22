@@ -1,53 +1,54 @@
 "use strict";
-const { readFileSync } = require("fs");
 const fetch = require("node-fetch");
-const { DynamoDB } = require("aws-sdk");
-const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new DynamoDB.DocumentClient({
-  endpoint: "http://localhost:8000",
-  service: dynamodb,
-});
+const db = require("../../../config/db");
+const Alis = require("../../api/models/alisModel");
 
-function getUsers() {
-  const users_obj = JSON.parse(readFileSync("json/ugokMembers.json", "utf-8"));
-  let users = [];
-  users_obj.forEach((user) => {
-    users.push({
-      id: user.user_id,
-      alis_id: user.alis_id,
+async function getUsersAndUpdate(date) {
+  const users_obj = await Alis.find(async (err, users) => {
+    if (err) console.error(err);
+    // ここにupdate処理が必要;
+    await Promise.all(
+      users.map(async (user) => {
+        const articles = await getArticlesId(user.alisId, date);
+        const data = await getAlisData(articles);
+        user.likes.week = data.likes;
+        user.posts.week = data.posts;
+        await user.save((err, user) => {
+          if (err) console.error(err);
+          console.log(user);
+        });
+      })
+    ).catch((error) => {
+      console.error(error);
+      db.disconnectDB();
     });
   });
-
-  return users;
+  return users_obj;
 }
 
 async function getArticlesId(user, date) {
   const response = await fetch(
-    `https://alis.to/api/users/${user.alis_id}/articles/public`
+    `https://alis.to/api/users/${user}/articles/public`
   );
   const body = await response.json();
-  let alis = {
-    id: user.id,
-    articles: [],
-  };
+  let articles = [];
   if ("Items" in body) {
     body.Items.forEach((article) => {
       if (date.getTime() < article.created_at * 1000) {
-        alis.articles.push(article.article_id);
+        articles.push(article.article_id);
       }
     });
   }
-  return alis;
+  return articles;
 }
 
-async function getAlisLikes(alis_data) {
+async function getAlisData(articles) {
   let alis = {
-    id: alis_data.id,
     likes: 0,
-    posts: alis_data.articles.length,
+    posts: articles.length,
   };
   await Promise.all(
-    alis_data.articles.map(async (article) => {
+    articles.map(async (article) => {
       const response = await fetch(
         `https://alis.to/api/articles/${article}/likes`
       );
@@ -64,50 +65,14 @@ async function getAlisLikes(alis_data) {
     });
   return alis;
 }
-// DB操作
-function updateAlisData(user) {
-  const params = {
-    TableName: "Member",
-    Key: {
-      userId: user.id,
-    },
-    UpdateExpression: "SET #a.#l = :likesCount, #a.#p = :postsCount",
-    ExpressionAttributeNames: {
-      "#a": "alis",
-      "#l": "likes_week",
-      "#p": "posts_week",
-    },
-    ExpressionAttributeValues: {
-      ":likesCount": user.likes,
-      ":postsCount": user.posts,
-    },
-  };
-  try {
-    dynClient.update(params).promise();
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 async function main() {
   const date = new Date();
   date.setDate(date.getDate() - 7);
-  const users = getUsers();
-  Promise.all(
-    users.map(async (user) => {
-      const alis = await getArticlesId(user, date);
-      return await getAlisLikes(alis);
-    })
-  )
-    .then((users) => {
-      users.forEach((user) => {
-        updateAlisData(user);
-      });
-      console.log("success");
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+
+  db.connectDB();
+  getUsersAndUpdate(date);
 }
 
 main();
+// todo: モジュール化する
