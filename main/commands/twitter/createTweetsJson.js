@@ -1,29 +1,26 @@
 "use strict";
-const twitter = require("twitter");
+require("dotenv").config();
+const db = require("../../../config/db");
+const Twitter = require("../../api/models/twitterModel");
 const fs = require("fs");
-const twiClient = new twitter(
-  JSON.parse(fs.readFileSync("config/secret.json", "utf-8"))
-);
+const twitterAPI = require("twitter");
+const twiClient = new twitterAPI({
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token_key: process.env.ACCESS_TOKEN_KEY,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET,
+});
 
-function getUsers() {
-  const users_obj = JSON.parse(
-    fs.readFileSync("json/ugokMembers.json", "utf-8")
-  );
-  let users = [];
-  users_obj.forEach((user) => {
-    users.push({
-      id: user.user_id,
-      twitter_id: user.twitter_id,
-    });
+async function getUsers() {
+  const users_obj = await Twitter.find((err) => {
+    if (err) console.error(err);
   });
-
-  return users;
+  return users_obj;
 }
 
-async function getTweets(user) {
-  console.log(user);
+async function getTweets(userId) {
   let params = {
-    id: user.twitter_id,
+    id: userId,
     count: 200,
     include_rts: false,
   };
@@ -42,17 +39,19 @@ async function getTweets(user) {
     oldest = all_tweets.slice(-1)[0].id - 300;
   }
   fs.writeFileSync(
-    `json/tweets/${user.twitter_id}.json`,
+    `json/tweets/${userId}.json`,
     JSON.stringify(all_tweets),
     "utf-8"
   );
 }
 
 async function main() {
-  const users = getUsers();
+  db.connectDB();
+  const users = await getUsers();
+  db.disconnectDB();
   Promise.all(
     users.map(async (user) => {
-      getTweets(user);
+      getTweets(user.screenName);
     })
   )
     .then(() => {
@@ -61,7 +60,7 @@ async function main() {
     .catch((error) => {
       console.error(error);
     });
-  console.log(users);
 }
 
 main();
+// todo: モジュール化する
