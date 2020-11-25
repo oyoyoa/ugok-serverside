@@ -6,7 +6,7 @@ const Alis = require("../../api/models/alisModel");
 async function getUsersAndUpdate() {
   const users_obj = await Alis.find(async (err, users) => {
     if (err) console.error(err);
-    // ここにupdate処理が必要;
+    // update処理
     await Promise.all(
       users.map(async (user) => {
         const alis = await getArticlesId(user.alisId);
@@ -26,6 +26,7 @@ async function getUsersAndUpdate() {
   return users_obj;
 }
 
+// 全期間の記事のidを取得する
 async function getArticlesId(user) {
   const response = await fetch(
     `https://alis.to/api/users/${user}/articles/public`
@@ -40,6 +41,7 @@ async function getArticlesId(user) {
   return articles;
 }
 
+// 全期間の記事のidを元に、いいねの数を計算する
 async function getAlisData(articles) {
   let alis = {
     likes: 0,
@@ -65,7 +67,7 @@ async function getAlisData(articles) {
   return alis;
 }
 
-// DB操作
+// todo: update処理が全て終わった後にdisconnectDBをする
 async function main() {
   db.connectDB();
   await getUsersAndUpdate();

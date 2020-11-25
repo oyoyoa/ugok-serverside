@@ -3,11 +3,10 @@ const db = require("../../../config/db");
 const Twitter = require("../../api/models/twitterModel");
 const { readFileSync } = require("fs");
 
-// jsonfileから読み込む
 async function getUsersAndUpdate() {
   const users_obj = await Twitter.find(async (err, users) => {
     if (err) console.error(err);
-    // ここにupdate処理が必要
+    // update処理
     await Promise.all(
       users.map(async (user) => {
         const obj = getLikeAndRT(user.screenName);
@@ -26,6 +25,7 @@ async function getUsersAndUpdate() {
   return users_obj;
 }
 
+// 事前に取得しておいたjsonファイルから、ツイートを読み込んでいいねとRT数を計算する
 function getLikeAndRT(user) {
   let rt = 0;
   let likes = 0;
@@ -41,11 +41,12 @@ function getLikeAndRT(user) {
   return twitter_obj;
 }
 
+// todo: 全てのupdate処理が終わったあとdisconnectDBをする
 async function main() {
   db.connectDB();
   await getUsersAndUpdate();
 }
 
 main();
-// disconnectDBをしたい
+
 // todo: モジュール化する

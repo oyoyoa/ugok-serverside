@@ -8,5 +8,5 @@ const app = express();
 //   console.log("Server is running on Port: " + port);
 // });
 
-const connectDB = require("./db");
-connectDB();
+const db = require("./db");
+db.connectDB();

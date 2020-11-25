@@ -11,7 +11,7 @@ const uri = `mongodb+srv://oyoyoa:${mongo_pass}@cluster0.ktjzw.gcp.mongodb.net/$
 
 module.exports.connectDB = function connectDB() {
   mongoose.connect(uri, option).catch((err) => console.log(err.reason));
-  //   db.on("error", console.error.bind(console, "connection error:"));
+    // db.on("error", console.error.bind(console, "connection error:"));
   db.once("open", () => {
     console.log("connecting... You can cancel from ctrl + c");
   });
