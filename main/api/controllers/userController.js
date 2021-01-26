@@ -28,22 +28,20 @@ exports.showAllUsers = async(req, res) => {
 // 特定のユーザーを取得する。
 exports.showUserById = async (req, res) => {
   User.findById(req.params.userId).lean().exec(async(err, user) => {
-    console.log(user);
     if (err) res.send("User: ", err);
-    await Twitter.findById(user.twitterId, (err, twitter) => {
-      if (err) res.send("Twitter: ", err);
-      user.twitter = twitter;
-      console.log(user)
-    });
-    await ALIS.findById(user.alisId, (err, alis) => {
-      if (err) res.send("ALIS: ", err);
-      user.alis = alis;
-    });
-    delete user.twitterId;
-    delete user.alisId;
-    delete user.__v;
-    delete user.twitter.__v;
-    delete user.alis.__v;
+    // await Twitter.findById(user.twitterId, (err, twitter) => {
+    //   if (err) res.send("Twitter: ", err);
+    //   user.twitter = twitter;
+    // });
+    // await ALIS.findById(user.alisId, (err, alis) => {
+    //   if (err) res.send("ALIS: ", err);
+    //   user.alis = alis;
+    // });
+    // delete user.twitterId;
+    // delete user.alisId;
+    // delete user.__v;
+    // delete user.twitter.__v;
+    // delete user.alis.__v;
     res.json(user);
   });
 };
