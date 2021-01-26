@@ -1,12 +1,9 @@
 const express = require("express"),
   app = express(),
   port = process.env.PORT || 3000,
-  // mongoose = require("mongoose"),
-  // User = require("../main/api/models/alisModel"), // 作成したModelの読み込み
-  bodyParser = require("body-parser");
-
-  const db = require("./db");
-  db.connectDB();
+  bodyParser = require("body-parser"),
+  db = require("./db");
+db.connectDB();
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
