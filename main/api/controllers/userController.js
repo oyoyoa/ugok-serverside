@@ -17,9 +17,6 @@ exports.showAllUsers = async(req, res) => {
       });
       delete users[i].twitterId;
       delete users[i].alisId;
-      delete users[i].__v;
-      delete users[i].twitter.__v;
-      delete users[i].alis.__v;
     }
     res.json(users);
   });
