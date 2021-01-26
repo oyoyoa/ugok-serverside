@@ -2,9 +2,17 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: UGOK
-
+host: ugok-app.herokuapp.com
+schemes:
+  - https
+# 全てのAPIのペースになるパス。 /v1/users のようになる。
+basePath: /api
+produces:
+  - application/json
+consumes:
+  - application/json
 paths:
-  'api/users':
+  '/users':
     get:
       description: 全ユーザの情報取得
       responses:
@@ -16,7 +24,7 @@ paths:
               user:
                 type: $ref: '#/definitions/User'
 paths:
-  'api/user/{id}':
+  '/user/{id}':
     get:
       description: ユーザごとの情報取得
       parameters:
@@ -31,10 +39,8 @@ paths:
           schema:
             type: object
             properties:
-              id:
-                type: integer
-              username:
-                type: string
+              user:
+                type: $ref: '#/definitions/User'
 
 definitions:
   User:
@@ -42,6 +48,30 @@ definitions:
     properties:
       _id: string
       name: string
-      twitterId: string
       __v: integer
+      twitter: $ref: '#/definitions/Twitter'
+      alis: $ref: '#/definitions/Alis'
+  Twitter:
+    type: object
+    properties:
+      _id: string
+      twitterId: string
+      screenName: string
+      icon: string
+      __v: integer
+      likes: $ref: '#/definitions/Data'
+      rt: $ref: '#/definitions/Data'
+  Alis:
+    type: object
+    properties:
+      _id: string
       alisId: string
+      __v: integer
+      likes: $ref: '#/definitions/Data'
+      posts: $ref: '#/definitions/Data'
+  Data:
+    type: object
+    properties:
+      all: integer
+      week: integer
+      half: integer
