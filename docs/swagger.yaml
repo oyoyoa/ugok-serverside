@@ -1,17 +1,30 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: タイトル
+  title: UGOK
+
 paths:
-  '/user/{id}':
+  'api/users':
     get:
-      description: ユーザー情報取得
+      description: 全ユーザの情報取得
+      responses:
+        '200':
+          description: 成功
+          schema:
+            type: array
+            properties:
+              user:
+                type: $ref: '#/definitions/User'
+paths:
+  'api/user/{id}':
+    get:
+      description: ユーザごとの情報取得
       parameters:
       - name: id
         in: path
-        description: user id
+        description: MongoDBのUserID
         required: true
-        type: number
+        type: string
       responses:
         '200':
           description: 成功
@@ -22,3 +35,13 @@ paths:
                 type: integer
               username:
                 type: string
+
+definitions:
+  User:
+    type: object
+    properties:
+      _id: string
+      name: string
+      twitterId: string
+      __v: integer
+      alisId: string
