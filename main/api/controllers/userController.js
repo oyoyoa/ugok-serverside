@@ -27,8 +27,9 @@ exports.showAllUsers = async(req, res) => {
 
 // 特定のユーザーを取得する。
 exports.showUserById = async (req, res) => {
-  User.findById(req.params.userId).lean().exec(async(err, user) => {
-    if (err) res.send("User: ", err);
+  res.json(req.params.userId);
+  // User.findById(req.params.userId).lean().exec(async(err, user) => {
+  //   if (err) res.send("User: ", err);
     // await Twitter.findById(user.twitterId, (err, twitter) => {
     //   if (err) res.send("Twitter: ", err);
     //   user.twitter = twitter;
@@ -42,7 +43,7 @@ exports.showUserById = async (req, res) => {
     // delete user.__v;
     // delete user.twitter.__v;
     // delete user.alis.__v;
-    res.json(user);
-  });
+  //   res.json(user);
+  // });
 };
 
