@@ -14,4 +14,4 @@ routes(app); //appにRouteを設定する。
 
 app.listen(port); // appを特定のportでlistenさせる。
 
-console.log("todo list RESTful API server started on: " + port);
+console.log("RESTful API server started on: " + port);

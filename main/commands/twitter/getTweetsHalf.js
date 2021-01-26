@@ -19,7 +19,7 @@ async function getUsersAndUpdate(start, end) {
       })
     ).catch((error) => {
       console.error(error);
-      db.disconnectDB();
+      //db.disconnectDB();
     });
   });
   return users_obj;
@@ -53,7 +53,7 @@ async function main() {
   console.log(month);
   let period;
   //triggerにする
-  if (month !== 4 && month !== 9) {
+  if (month !== 1 && month !== 9) {
     console.log("学期始めではありません");
     return;
   }
