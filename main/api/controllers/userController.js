@@ -27,23 +27,22 @@ exports.showAllUsers = async(req, res) => {
 
 // 特定のユーザーを取得する。
 exports.showUserById = async (req, res) => {
-  res.json(req.params.userId);
-  // User.findById(req.params.userId).lean().exec(async(err, user) => {
-  //   if (err) res.send("User: ", err);
-    // await Twitter.findById(user.twitterId, (err, twitter) => {
-    //   if (err) res.send("Twitter: ", err);
-    //   user.twitter = twitter;
-    // });
-    // await ALIS.findById(user.alisId, (err, alis) => {
-    //   if (err) res.send("ALIS: ", err);
-    //   user.alis = alis;
-    // });
-    // delete user.twitterId;
-    // delete user.alisId;
-    // delete user.__v;
-    // delete user.twitter.__v;
-    // delete user.alis.__v;
-  //   res.json(user);
-  // });
+  User.findById(req.params.userId).lean().exec(async(err, user) => {
+    if (err) res.send("User: ", err);
+    await Twitter.findById(user.twitterId, (err, twitter) => {
+      if (err) res.send("Twitter: ", err);
+      user.twitter = twitter;
+    });
+    await ALIS.findById(user.alisId, (err, alis) => {
+      if (err) res.send("ALIS: ", err);
+      user.alis = alis;
+    });
+    delete user.twitterId;
+    delete user.alisId;
+    delete user.__v;
+    delete user.twitter.__v;
+    delete user.alis.__v;
+    res.json(user);
+  });
 };
 

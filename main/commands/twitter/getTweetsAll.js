@@ -19,7 +19,7 @@ async function getUsersAndUpdate() {
       })
     ).catch((error) => {
       console.error(error);
-      db.disconnectDB();
+      //db.disconnectDB();
     });
   });
   return users_obj;

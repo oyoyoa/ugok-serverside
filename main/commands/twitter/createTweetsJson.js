@@ -48,7 +48,7 @@ async function getTweets(userId) {
 async function main() {
   db.connectDB();
   const users = await getUsers();
-  db.disconnectDB();
+  // db.disconnectDB();
   Promise.all(
     users.map(async (user) => {
       getTweets(user.screenName);
