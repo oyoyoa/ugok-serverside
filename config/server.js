@@ -1,12 +1,17 @@
-require("dotenv").config();
-const express = require("express");
-const app = express();
-
-// const port = 4000;
-
-// app.listen(port, () => {
-//   console.log("Server is running on Port: " + port);
-// });
-
-const db = require("./db");
+const express = require("express"),
+  app = express(),
+  port = process.env.PORT || 3000,
+  bodyParser = require("body-parser"),
+  db = require("./db");
 db.connectDB();
+
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+const routes = require("../main/api/routes/userRoute.js"); // Routeのインポート
+routes(app); //appにRouteを設定する。
+
+app.listen(port); // appを特定のportでlistenさせる。
+
+console.log("todo list RESTful API server started on: " + port);

@@ -1,10 +1,10 @@
 module.exports = (app) => {
   const userController = require('../controllers/userController');
 
-  app.route('/api')
+  app.route('/api/users')
     .get(userController.showAllUsers);
 
 
-  app.route('/api/:userId')
+  app.route('/api/user/:userId')
     .get(userController.showUserById);
 };
