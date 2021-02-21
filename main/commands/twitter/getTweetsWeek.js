@@ -43,12 +43,11 @@ function getLikesAndRT(user, date) {
   return twitter_obj;
 }
 
-async function main() {
+module.exports.getTweetsWeek = async function main() {
   const date = new Date();
   date.setDate(date.getDate() - 7);
 
-  db.connectDB();
   getUsersAndUpdate(date);
 }
-main();
+// main();
 // todo: モジュール化する

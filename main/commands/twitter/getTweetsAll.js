@@ -42,11 +42,10 @@ function getLikeAndRT(user) {
 }
 
 // todo: 全てのupdate処理が終わったあとdisconnectDBをする
-async function main() {
-  db.connectDB();
+module.exports.getTweetsAll = async function main() {
   await getUsersAndUpdate();
 }
 
-main();
+// main();
 
 // todo: モジュール化する

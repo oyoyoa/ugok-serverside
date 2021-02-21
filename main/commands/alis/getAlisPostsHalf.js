@@ -69,7 +69,7 @@ async function getAlisData(articles) {
   return alis;
 }
 
-async function main() {
+module.exports.getAlisHalf = async function main() {
   const date = new Date();
   const month = date.getMonth() + 1;
   let period;
@@ -93,9 +93,8 @@ async function main() {
   start.setDate(2);
   end.setDate(2);
 
-  db.connectDB();
   getUsersAndUpdate(start, end);
 }
 
-main();
+// main();
 // todo: モジュール化する

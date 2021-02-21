@@ -46,7 +46,7 @@ function getLikesAndRT(user, start, end) {
   return twitter_obj;
 }
 
-async function main() {
+module.exports.getTweetsHalf = async function main() {
   const date = new Date();
   console.log(date);
   const month = date.getMonth() + 1;
@@ -72,9 +72,8 @@ async function main() {
   start.setDate(2);
   end.setDate(2);
 
-  db.connectDB();
   getUsersAndUpdate(start, end);
 }
 
-main();
+// main();
 // todo: モジュール化する

@@ -66,13 +66,12 @@ async function getAlisData(articles) {
   return alis;
 }
 
-async function main() {
+module.exports.getAlisWeek = async function main() {
   const date = new Date();
   date.setDate(date.getDate() - 7);
 
-  db.connectDB();
   getUsersAndUpdate(date);
 }
 
-main();
+// main();
 // todo: モジュール化する
