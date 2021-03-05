@@ -20,7 +20,7 @@ async function getUsersAndUpdate(date) {
       })
     ).catch((error) => {
       console.error(error);
-      db.disconnectDB();
+      // db.disconnectDB();
     });
   });
   return users_obj;
@@ -66,12 +66,13 @@ async function getAlisData(articles) {
   return alis;
 }
 
-module.exports.getAlisWeek = async function main() {
+async function main() {
   const date = new Date();
   date.setDate(date.getDate() - 7);
 
   getUsersAndUpdate(date);
 }
 
-// main();
+module.exports.getAlisWeek =  main;
+main();
 // todo: モジュール化する

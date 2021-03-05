@@ -20,7 +20,7 @@ async function getUsersAndUpdate(start, end) {
       })
     ).catch((error) => {
       console.error(error);
-      db.disconnectDB();
+      // db.disconnectDB();
     });
   });
   return users_obj;
@@ -69,16 +69,17 @@ async function getAlisData(articles) {
   return alis;
 }
 
-module.exports.getAlisHalf = async function main() {
+async function main() {
+  // db.connectDB();
   const date = new Date();
   const month = date.getMonth() + 1;
   let period;
   //triggerにする
-  if (month !== 4 && month !== 9) {
+  if (month !== 3 && month !== 9) {
     console.log("学期始めではありません");
     return;
   }
-  if (month === 4) {
+  if (month === 3) {
     period = 7;
   } else if (month === 9) {
     period = 5;
@@ -96,5 +97,6 @@ module.exports.getAlisHalf = async function main() {
   getUsersAndUpdate(start, end);
 }
 
-// main();
+module.exports.getAlisHalf = main;
+main();
 // todo: モジュール化する

@@ -20,7 +20,7 @@ async function getUsersAndUpdate() {
       })
     ).catch((error) => {
       console.error(error);
-      db.disconnectDB();
+      // db.disconnectDB();
     });
   });
   return users_obj;
@@ -68,8 +68,9 @@ async function getAlisData(articles) {
 }
 
 // todo: update処理が全て終わった後にdisconnectDBをする
-module.exports.getAlisAll = async function main() {
+async function main() {
   await getUsersAndUpdate();
 }
-// main();
+module.exports.getAlisAll = main;
+main();
 // todo: モジュール化する

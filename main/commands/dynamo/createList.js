@@ -1,15 +1,18 @@
 "use strict";
-const twitter = require("twitter");
+require("dotenv").config();
 const { readFileSync } = require("fs");
-const { DynamoDB } = require("aws-sdk");
-const dynamodb = new DynamoDB({ region: "ap-northeast-1" });
-const dynClient = new DynamoDB.DocumentClient({
-  endpoint: "http://localhost:8000",
-  service: dynamodb,
+const twitterAPI = require("twitter"),
+  consumer_key = process.env.CONSUMER_KEY,
+  consumer_secret = process.env.CONSUMER_SECRET,
+  access_token_key = process.env.ACCESS_TOKEN_KEY,
+  access_token_secret = process.env.ACCESS_TOKEN_SECRET;
+  
+const twiClient = new twitterAPI({
+  consumer_key: consumer_key,
+  consumer_secret: consumer_secret,
+  access_token_key: access_token_key,
+  access_token_secret: access_token_secret,
 });
-const twiClient = new twitter(
-  JSON.parse(readFileSync("config/secret.json", "utf-8"))
-);
 
 twiClient.get("lists/list", (error, lists) => {
   if (error) console.error(error);

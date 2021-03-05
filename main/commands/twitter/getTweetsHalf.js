@@ -10,6 +10,7 @@ async function getUsersAndUpdate(start, end) {
     await Promise.all(
       users.map(async (user) => {
         const obj = getLikesAndRT(user.screenName, start, end);
+        user.posts.half = obj.posts_half;
         user.likes.half = obj.likes_half;
         user.rt.half = obj.rt_half;
         await user.save((err, user) => {
@@ -28,6 +29,7 @@ async function getUsersAndUpdate(start, end) {
 function getLikesAndRT(user, start, end) {
   let rt = 0;
   let likes = 0;
+  let posts = 0;
   const tweets = JSON.parse(readFileSync(`json/tweets/${user}.json`, "utf-8"));
   tweets.forEach((tweet) => {
     const created_at = new Date(tweet.created_at);
@@ -35,25 +37,26 @@ function getLikesAndRT(user, start, end) {
       start.getTime() < created_at.getTime() &&
       created_at.getTime() < end.getTime()
     ) {
+      posts++ ;
       likes += tweet.favorite_count;
       rt += tweet.retweet_count;
     }
   });
   const twitter_obj = {
+    posts_half: posts,
     likes_half: likes,
     rt_half: rt,
   };
   return twitter_obj;
 }
 
-module.exports.getTweetsHalf = async function main() {
+async function main() {
   const date = new Date();
-  console.log(date);
   const month = date.getMonth() + 1;
   console.log(month);
   let period;
   //triggerにする
-  if (month !== 1 && month !== 9) {
+  if (month !== 4 && month !== 9) {
     console.log("学期始めではありません");
     return;
   }
@@ -75,5 +78,6 @@ module.exports.getTweetsHalf = async function main() {
   getUsersAndUpdate(start, end);
 }
 
-// main();
+module.exports.getTweetsHalf = main;
+main();
 // todo: モジュール化する

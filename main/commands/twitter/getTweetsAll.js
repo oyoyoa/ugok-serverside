@@ -10,6 +10,7 @@ async function getUsersAndUpdate() {
     await Promise.all(
       users.map(async (user) => {
         const obj = getLikeAndRT(user.screenName);
+        user.posts.all = obj.posts_all;
         user.likes.all = obj.likes_all;
         user.rt.all = obj.rt_all;
         await user.save((err, user) => {
@@ -35,6 +36,7 @@ function getLikeAndRT(user) {
     rt += tweet.retweet_count;
   });
   const twitter_obj = {
+    posts_all: tweets.length,
     likes_all: likes,
     rt_all: rt,
   };
@@ -42,10 +44,12 @@ function getLikeAndRT(user) {
 }
 
 // todo: 全てのupdate処理が終わったあとdisconnectDBをする
-module.exports.getTweetsAll = async function main() {
+async function main() {
+  // db.connectDB();
   await getUsersAndUpdate();
 }
 
-// main();
+module.exports.getTweetsAll = main;
+main();
 
 // todo: モジュール化する

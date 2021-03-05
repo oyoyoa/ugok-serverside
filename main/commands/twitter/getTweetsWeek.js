@@ -10,6 +10,7 @@ async function getUsersAndUpdate(date) {
     await Promise.all(
       users.map(async (user) => {
         const obj = getLikesAndRT(user.screenName, date);
+        user.posts.week = obj.posts_week;
         user.likes.week = obj.likes_week;
         user.rt.week = obj.rt_week;
         await user.save((err, user) => {
@@ -28,26 +29,30 @@ async function getUsersAndUpdate(date) {
 function getLikesAndRT(user, date) {
   let rt = 0;
   let likes = 0;
+  let posts = 0;
   const tweets = JSON.parse(readFileSync(`json/tweets/${user}.json`, "utf-8"));
   tweets.forEach((tweet) => {
     const created_at = new Date(tweet.created_at);
     if (date.getTime() < created_at.getTime()) {
+      posts++ ;
       likes += tweet.favorite_count;
       rt += tweet.retweet_count;
     }
   });
   const twitter_obj = {
+    posts_week: posts,
     likes_week: likes,
     rt_week: rt,
   };
   return twitter_obj;
 }
 
-module.exports.getTweetsWeek = async function main() {
+async function main() {
   const date = new Date();
   date.setDate(date.getDate() - 7);
 
   getUsersAndUpdate(date);
 }
-// main();
+module.exports.getTweetsWeek = main;
+main();
 // todo: モジュール化する

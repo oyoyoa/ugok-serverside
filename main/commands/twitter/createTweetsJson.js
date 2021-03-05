@@ -45,8 +45,9 @@ async function getTweets(userId) {
   );
 }
 
-module.exports.createTweetsJson = async function main() {
+async function main() {
   const users = await getUsers();
+  console.log(users);
   // db.disconnectDB();
   Promise.all(
     users.map(async (user) => {
@@ -61,5 +62,6 @@ module.exports.createTweetsJson = async function main() {
     });
 }
 
-// main();
+module.exports.createTweetsJson = main;
+main();
 // todo: モジュール化する
