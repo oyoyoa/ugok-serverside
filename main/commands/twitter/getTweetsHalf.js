@@ -51,9 +51,11 @@ function getLikesAndRT(user, start, end) {
 }
 
 async function main() {
+  console.log("Get Tweets Half");
+
   const date = new Date();
   const month = date.getMonth() + 1;
-  console.log(month);
+  console.log("this month:", month, "(Twitter Half)");
   let period;
   //triggerにする
   if (month !== 4 && month !== 9) {
@@ -79,5 +81,5 @@ async function main() {
 }
 
 module.exports.getTweetsHalf = main;
-main();
+// main();
 // todo: モジュール化する

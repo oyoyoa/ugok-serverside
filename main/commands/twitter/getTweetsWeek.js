@@ -48,11 +48,13 @@ function getLikesAndRT(user, date) {
 }
 
 async function main() {
+  console.log("Get Tweets Week");
+
   const date = new Date();
   date.setDate(date.getDate() - 7);
 
   getUsersAndUpdate(date);
 }
 module.exports.getTweetsWeek = main;
-main();
+// main();
 // todo: モジュール化する

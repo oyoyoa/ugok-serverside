@@ -70,9 +70,12 @@ async function getAlisData(articles) {
 }
 
 async function main() {
+  console.log("Get Alis Posts Half");
+
   // db.connectDB();
   const date = new Date();
   const month = date.getMonth() + 1;
+  console.log("this month:", month, "(Alis Half)");
   let period;
   //triggerにする
   if (month !== 3 && month !== 9) {
@@ -98,5 +101,5 @@ async function main() {
 }
 
 module.exports.getAlisHalf = main;
-main();
+// main();
 // todo: モジュール化する

@@ -46,9 +46,10 @@ async function getTweets(userId) {
 }
 
 async function main() {
+  // db.connectDB();
+  console.log("Create Tweets Json");
   const users = await getUsers();
   console.log(users);
-  // db.disconnectDB();
   Promise.all(
     users.map(async (user) => {
       getTweets(user.screenName);
@@ -56,6 +57,7 @@ async function main() {
   )
     .then(() => {
       console.log("success");
+      // db.disconnectDB();
     })
     .catch((error) => {
       console.error(error);
@@ -63,5 +65,5 @@ async function main() {
 }
 
 module.exports.createTweetsJson = main;
-main();
+// main();
 // todo: モジュール化する

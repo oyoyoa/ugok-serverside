@@ -67,6 +67,8 @@ async function getAlisData(articles) {
 }
 
 async function main() {
+  console.log("Get Alis Posts Week");
+
   const date = new Date();
   date.setDate(date.getDate() - 7);
 
@@ -74,5 +76,5 @@ async function main() {
 }
 
 module.exports.getAlisWeek =  main;
-main();
+// main();
 // todo: モジュール化する

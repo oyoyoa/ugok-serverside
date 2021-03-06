@@ -69,8 +69,10 @@ async function getAlisData(articles) {
 
 // todo: update処理が全て終わった後にdisconnectDBをする
 async function main() {
+  console.log("Get Alis Posts All");
+
   await getUsersAndUpdate();
 }
 module.exports.getAlisAll = main;
-main();
+// main();
 // todo: モジュール化する

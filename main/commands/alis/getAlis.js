@@ -53,6 +53,6 @@ async function main() {
   // });
 }
 
-main();
+// main();
 // todo: モジュール化する
 // disconnectDB

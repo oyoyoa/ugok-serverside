@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node config/localServer.js"
+    "start": "node config/server.js",
+    "update": "node main/commands/update.js"
   },
   "author": "",
   "license": "ISC",
