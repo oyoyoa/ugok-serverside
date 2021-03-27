@@ -81,5 +81,6 @@ async function main() {
 }
 
 module.exports.getTweetsHalf = main;
-// main();
+db.connectDB();
+main();
 // todo: モジュール化する

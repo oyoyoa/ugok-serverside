@@ -76,5 +76,6 @@ async function main() {
 }
 
 module.exports.getAlisWeek =  main;
-// main();
+db.connectDB();
+main();
 // todo: モジュール化する

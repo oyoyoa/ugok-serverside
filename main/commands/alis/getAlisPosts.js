@@ -74,5 +74,6 @@ async function main() {
   await getUsersAndUpdate();
 }
 module.exports.getAlisAll = main;
-// main();
+db.connectDB();
+main();
 // todo: モジュール化する

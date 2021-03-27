@@ -45,12 +45,12 @@ function getLikeAndRT(user) {
 
 // todo: 全てのupdate処理が終わったあとdisconnectDBをする
 async function main() {
-  // db.connectDB();
   console.log("Get Tweets All");
   await getUsersAndUpdate();
 }
 
 module.exports.getTweetsAll = main;
-// main();
+db.connectDB();
+main();
 
 // todo: モジュール化する

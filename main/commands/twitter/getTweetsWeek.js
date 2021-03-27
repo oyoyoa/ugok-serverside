@@ -56,5 +56,6 @@ async function main() {
   getUsersAndUpdate(date);
 }
 module.exports.getTweetsWeek = main;
-// main();
+db.connectDB();
+main();
 // todo: モジュール化する

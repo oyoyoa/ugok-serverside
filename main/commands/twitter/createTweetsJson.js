@@ -19,6 +19,7 @@ async function getUsers() {
 }
 
 async function getTweets(userId) {
+  // console.log(userId);
   let params = {
     id: userId,
     count: 200,
@@ -46,18 +47,16 @@ async function getTweets(userId) {
 }
 
 async function main() {
-  // db.connectDB();
   console.log("Create Tweets Json");
   const users = await getUsers();
-  console.log(users);
   Promise.all(
     users.map(async (user) => {
-      getTweets(user.screenName);
+      await getTweets(user.screenName);
     })
   )
     .then(() => {
       console.log("success");
-      // db.disconnectDB();
+      db.disconnectDB();
     })
     .catch((error) => {
       console.error(error);
@@ -65,5 +64,6 @@ async function main() {
 }
 
 module.exports.createTweetsJson = main;
-// main();
+db.connectDB();
+main();
 // todo: モジュール化する

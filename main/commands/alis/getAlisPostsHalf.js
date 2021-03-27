@@ -78,11 +78,11 @@ async function main() {
   console.log("this month:", month, "(Alis Half)");
   let period;
   //triggerにする
-  if (month !== 3 && month !== 9) {
+  if (month !== 4 && month !== 9) {
     console.log("学期始めではありません");
     return;
   }
-  if (month === 3) {
+  if (month === 4) {
     period = 7;
   } else if (month === 9) {
     period = 5;
@@ -101,5 +101,6 @@ async function main() {
 }
 
 module.exports.getAlisHalf = main;
-// main();
+db.connectDB();
+main();
 // todo: モジュール化する
